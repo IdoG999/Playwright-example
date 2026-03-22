@@ -14,9 +14,12 @@ pipeline {
                     reuseNode true
                 }
             }
+            environment {
+                CI = 'true'
+            }
             steps {
                 sh 'npm ci'
-                sh 'npx playwright test'
+                sh 'npm run test'
             }
         }
     }
