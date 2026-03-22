@@ -1,0 +1,23 @@
+# Jenkins on Docker - for Playwright E2E pipeline
+# Run: cd jenkins && docker compose up -d
+# Access: http://localhost:8080
+
+services:
+  jenkins:
+    build: .
+    image: jenkins-playwright:lts
+    container_name: jenkins
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    environment:
+      - JENKINS_OPTS=--prefix=
+
+volumes:
+  jenkins_home:

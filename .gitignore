@@ -1,4 +1,7 @@
 
+# Jenkins
+jenkins/.env
+
 # Playwright
 node_modules/
 /test-results/
