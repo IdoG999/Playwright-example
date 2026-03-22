@@ -142,11 +142,45 @@ This allows Jenkins to run builds automatically when you push to GitHub. For Jen
 
 ## Troubleshooting
 
+### Webhook failed to register: "failed to be registered or was removed"
+
+Jenkins runs on localhost, so GitHub cannot reach it to deliver webhook events. Jenkins shows this warning when it cannot manage webhooks for the repo.
+
+**Fix (silence the warning):** Add the repo to the ignore list so Jenkins stops trying to manage its webhook.
+
+1. Go to **Manage Jenkins** > **Configure System**
+2. Scroll to the **GitHub** section
+3. Click your **GitHub Server** entry to expand it
+4. Click **Advanced**
+5. Find **Additional actions** > **Add to hooks ignore list**
+6. In the input, enter: `IdoG999/Playwright-example`
+7. Click **Apply** then **Save**
+
+The warning will disappear. You can still trigger builds manually with **Build Now**.
+
+---
+
 ### Build fails: "couldn't find remote ref refs/heads/master"
 
 Your repo uses `main` as the default branch, but the pipeline is configured for `master`.
 
 **Fix:** Open the pipeline job > **Configure** > scroll to **Pipeline** > under **Branch Specifier** change `*/master` to `*/main` > **Save**. Run **Build Now** again.
+
+---
+
+### Build fails: "Unable to find Jenkinsfile from git"
+
+The Jenkinsfile was not in the repo when Jenkins checked out the code.
+
+**Fix:** Ensure the Jenkinsfile is committed and pushed to the root of your repo on the `main` branch. Then run **Build Now** again.
+
+---
+
+### Build fails: publishHTML "Missing required parameter: keepAll"
+
+Newer versions of the HTML Publisher plugin require `keepAll`, `alwaysLinkToLastBuild`, and `allowMissing`.
+
+**Fix:** The Jenkinsfile in this repo already includes these parameters. If you maintain your own Jenkinsfile, add them to the publishHTML block.
 
 ---
 

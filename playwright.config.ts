@@ -38,6 +38,14 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'chromium-debug',
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: { slowMo: 300 },
+        headless: false,
+      },
+    },
 
     {
       name: 'firefox',
@@ -60,13 +68,13 @@ export default defineConfig({
     // },
 
     /* Test against branded browsers. */
+    {
+      name: 'Google Chrome',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    },
     // {
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
 
