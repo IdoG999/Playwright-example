@@ -1,26 +1,27 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Text Box', () => {
-  test('should fill and submit text box form', async ({ page }) => {
+  test('should fill and submit text box form', async ({ page, testData }) => {
     await page.goto('/practice/text-box');
 
-    await page.locator('#userName').fill('John Doe');
-    await page.locator('#userEmail').fill('john@example.com');
-    await page.locator('#currentAddress').fill('123 Main St');
-    await page.locator('#permanentAddress').fill('456 Oak Ave');
+    const data = testData.textBox;
+    await page.locator('#userName').fill(data.fullName);
+    await page.locator('#userEmail').fill(data.email);
+    await page.locator('#currentAddress').fill(data.currentAddress);
+    await page.locator('#permanentAddress').fill(data.permanentAddress);
     await page.locator('#submit').click();
 
     const output = page.locator('#output');
     await expect(output).toBeVisible();
-    await expect(output).toContainText('John Doe');
-    await expect(output).toContainText('john@example.com');
-    await expect(output).toContainText('123 Main St');
-    await expect(output).toContainText('456 Oak Ave');
+    await expect(output).toContainText(data.fullName);
+    await expect(output).toContainText(data.email);
+    await expect(output).toContainText(data.currentAddress);
+    await expect(output).toContainText(data.permanentAddress);
   });
 });
 
 test.describe('Buttons', () => {
-  test('should handle single click', async ({ page }) => {
+  test('should handle single click', async ({ page, testData }) => {
     await page.goto('/practice/buttons');
 
     await page.locator('#dynamicClickBtn').click();

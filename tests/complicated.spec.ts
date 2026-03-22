@@ -1,33 +1,33 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Practice Form', () => {
-  test('should submit full student registration form', async ({ page }) => {
+  test('should submit full student registration form', async ({ page, testData }) => {
     await page.goto('/practice/practice-form');
 
-    // Fill required and optional fields
-    await page.locator('#firstName').fill('John');
-    await page.locator('#lastName').fill('Doe');
-    await page.locator('#userEmail').fill('john.doe@example.com');
+    const data = testData.practiceForm;
+    await page.locator('#firstName').fill(data.firstName);
+    await page.locator('#lastName').fill(data.lastName);
+    await page.locator('#userEmail').fill(data.email);
     await page.locator('#gender-radio-1').check(); // Male
-    await page.locator('#userNumber').fill('9876543210');
-    await page.locator('#dateOfBirthInput').fill('1995-05-15');
+    await page.locator('#userNumber').fill(data.mobile);
+    await page.locator('#dateOfBirthInput').fill(data.dateOfBirth);
     await page.locator('#hobbies-checkbox-1').check(); // Sports
-    await page.locator('#currentAddress').fill('123 Main Street, City');
+    await page.locator('#currentAddress').fill(data.address);
 
     // State and City dropdowns
     await page.locator('#state').click();
-    await page.getByText('NCR', { exact: true }).click();
+    await page.getByText(data.state, { exact: true }).click();
     await page.locator('#city').click();
-    await page.getByText('Delhi', { exact: true }).click();
+    await page.getByText(data.city, { exact: true }).click();
 
     await page.locator('#submit').click();
 
     // Verify success modal
     await expect(page.locator('.modal-content')).toBeVisible();
     await expect(page.getByText('Thanks for submitting the form')).toBeVisible();
-    await expect(page.locator('.modal-content')).toContainText('John');
-    await expect(page.locator('.modal-content')).toContainText('Doe');
-    await expect(page.locator('.modal-content')).toContainText('john.doe@example.com');
+    await expect(page.locator('.modal-content')).toContainText(data.firstName);
+    await expect(page.locator('.modal-content')).toContainText(data.lastName);
+    await expect(page.locator('.modal-content')).toContainText(data.email);
   });
 });
 
@@ -61,11 +61,12 @@ test.describe('Book Store', () => {
 });
 
 test.describe('Login - Negative and Navigation', () => {
-  test('should show error on invalid credentials', async ({ page }) => {
+  test('should show error on invalid credentials', async ({ page, testData }) => {
     await page.goto('/practice/login');
 
-    await page.locator('#userName').fill('invaliduser');
-    await page.locator('#password').fill('wrongpassword');
+    const creds = testData.loginCredentials;
+    await page.locator('#userName').fill(creds.userName);
+    await page.locator('#password').fill(creds.password);
     await page.locator('#login').click();
 
     await expect(page.getByText('Invalid username or password')).toBeVisible();
@@ -82,14 +83,25 @@ test.describe('Login - Negative and Navigation', () => {
 });
 
 test.describe('Multi-step Flow', () => {
-  test('should complete practice form and verify modal, then navigate to books', async ({ page }) => {
-    // Step 1: Submit form
+  test('should complete practice form and verify modal, then navigate to books', async ({ page, testData }) => {
+    // Step 1: Submit form (use custom data from fixture factory)
+    const formData = testData.createPracticeFormData({
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane@example.com',
+      gender: 'female',
+      mobile: '1234567890',
+    });
     await page.goto('/practice/practice-form');
-    await page.locator('#firstName').fill('Jane');
-    await page.locator('#lastName').fill('Smith');
-    await page.locator('#userEmail').fill('jane@example.com');
-    await page.locator('#gender-radio-2').check(); // Female
-    await page.locator('#userNumber').fill('1234567890');
+    await page.locator('#firstName').fill(formData.firstName);
+    await page.locator('#lastName').fill(formData.lastName);
+    await page.locator('#userEmail').fill(formData.email);
+    await page.locator('#gender-radio-2').check();
+    await page.locator('#userNumber').fill(formData.mobile);
+    await page.locator('#state').click();
+    await page.getByText(formData.state, { exact: true }).click();
+    await page.locator('#city').click();
+    await page.getByText(formData.city, { exact: true }).click();
     await page.locator('#submit').click();
 
     await expect(page.getByText('Thanks for submitting the form')).toBeVisible();
