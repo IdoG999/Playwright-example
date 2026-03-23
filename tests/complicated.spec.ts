@@ -19,17 +19,19 @@ test.describe('Practice Form', () => {
 });
 
 test.describe('Book Store', () => {
+  test.beforeEach(async ({ page }) => {
+    await new BooksPage(page).goto();
+  });
+
   test('should search books and filter results', async ({ page }) => {
     const booksPage = new BooksPage(page);
-    await booksPage.goto();
-
     await expect(booksPage.getBookByTitle('Git Pocket Guide')).toBeVisible();
     await expect(booksPage.getBookByTitle('Learning JavaScript Design Patterns')).toBeVisible();
 
     await booksPage.search('JavaScript');
     await expect(booksPage.getBookByTitle('Learning JavaScript Design Patterns')).toBeVisible();
     await expect(booksPage.getBookByTitle('Speaking JavaScript')).toBeVisible();
-    await expect(booksPage.getBookByTitle('Git Pocket Guide')).not.toBeVisible();
+    await expect(booksPage.getBookByTitle('Git Pocket Guide')).toBeHidden();
 
     await booksPage.clearSearch();
     await expect(booksPage.getBookByTitle('Git Pocket Guide')).toBeVisible();
@@ -37,8 +39,6 @@ test.describe('Book Store', () => {
 
   test('should navigate to book detail when clicking a book', async ({ page }) => {
     const booksPage = new BooksPage(page);
-    await booksPage.goto();
-
     await booksPage.clickBook('GitPocketGuide');
 
     await expect(page).toHaveURL(/\/books/);

@@ -1,8 +1,13 @@
-import { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import type { TextBoxFormData } from '../tests/fixtures/test-data';
 
+/** Page object for XQA Text Box practice. */
 export class TextBoxPage {
-  constructor(private page: Page) {}
+  readonly output: Locator;
+
+  constructor(private page: Page) {
+    this.output = page.locator('#output');
+  }
 
   readonly url = '/practice/text-box';
 
@@ -18,10 +23,6 @@ export class TextBoxPage {
   }
 
   async submit() {
-    await this.page.locator('#submit').click();
-  }
-
-  get output() {
-    return this.page.locator('#output');
+    await this.page.getByRole('button', { name: 'Submit' }).click();
   }
 }

@@ -1,8 +1,17 @@
-import { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import type { LoginCredentials } from '../tests/fixtures/test-data';
 
+/**
+ * Page object for Login (XQA and DemoQA).
+ */
 export class LoginPage {
-  constructor(private page: Page) {}
+  readonly errorMessage: Locator;
+  readonly backToLoginLink: Locator;
+
+  constructor(private page: Page) {
+    this.errorMessage = page.locator('#name');
+    this.backToLoginLink = page.getByText(/back to login/i);
+  }
 
   readonly url = '/practice/login';
   readonly demoQaLoginUrl = 'https://demoqa.com/login';
@@ -26,13 +35,5 @@ export class LoginPage {
 
   async clickNewUser() {
     await this.page.locator('#newUser').click();
-  }
-
-  get errorMessage() {
-    return this.page.locator('#name');
-  }
-
-  get backToLoginLink() {
-    return this.page.getByText(/back to login/i);
   }
 }

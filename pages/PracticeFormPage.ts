@@ -1,8 +1,18 @@
-import { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import type { PracticeFormData } from '../tests/fixtures/test-data';
 
+/**
+ * Page object for DemoQA Practice Form.
+ * Uses getByRole where possible for resilience.
+ */
 export class PracticeFormPage {
-  constructor(private page: Page) {}
+  readonly modal: Locator;
+  readonly thanksMessage: Locator;
+
+  constructor(private page: Page) {
+    this.modal = page.locator('.modal-content');
+    this.thanksMessage = page.getByText('Thanks for submitting the form');
+  }
 
   readonly url = 'https://demoqa.com/automation-practice-form';
 
@@ -28,18 +38,10 @@ export class PracticeFormPage {
   }
 
   async submit() {
-    await this.page.locator('#submit').click();
+    await this.page.getByRole('button', { name: 'Submit' }).click();
   }
 
   async closeModal() {
     await this.page.locator('#closeLargeModal').click();
-  }
-
-  get modal() {
-    return this.page.locator('.modal-content');
-  }
-
-  get thanksMessage() {
-    return this.page.getByText('Thanks for submitting the form');
   }
 }

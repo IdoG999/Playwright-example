@@ -2,10 +2,12 @@ import { test, expect } from './fixtures';
 import { TextBoxPage, ButtonsPage } from '../pages';
 
 test.describe('Text Box', () => {
+  test.beforeEach(async ({ page }) => {
+    await new TextBoxPage(page).goto();
+  });
+
   test('should fill and submit text box form', async ({ page, testData }) => {
     const textBoxPage = new TextBoxPage(page);
-    await textBoxPage.goto();
-
     const data = testData.textBox;
     await textBoxPage.fillForm(data);
     await textBoxPage.submit();
@@ -19,26 +21,24 @@ test.describe('Text Box', () => {
 });
 
 test.describe('Buttons', () => {
+  test.beforeEach(async ({ page }) => {
+    await new ButtonsPage(page).goto();
+  });
+
   test('should handle single click', async ({ page }) => {
     const buttonsPage = new ButtonsPage(page);
-    await buttonsPage.goto();
-
     await buttonsPage.clickDynamic();
     await expect(buttonsPage.dynamicClickMessage).toBeVisible();
   });
 
   test('should handle double click', async ({ page }) => {
     const buttonsPage = new ButtonsPage(page);
-    await buttonsPage.goto();
-
     await buttonsPage.doubleClick();
     await expect(buttonsPage.doubleClickMessage).toBeVisible();
   });
 
   test('should handle right click', async ({ page }) => {
     const buttonsPage = new ButtonsPage(page);
-    await buttonsPage.goto();
-
     await buttonsPage.rightClick();
     await expect(buttonsPage.rightClickMessage).toBeVisible();
   });
