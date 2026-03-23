@@ -1,44 +1,45 @@
 import { test, expect } from './fixtures';
+import { TextBoxPage, ButtonsPage } from '../pages';
 
 test.describe('Text Box', () => {
   test('should fill and submit text box form', async ({ page, testData }) => {
-    await page.goto('/practice/text-box');
+    const textBoxPage = new TextBoxPage(page);
+    await textBoxPage.goto();
 
     const data = testData.textBox;
-    await page.locator('#userName').fill(data.fullName);
-    await page.locator('#userEmail').fill(data.email);
-    await page.locator('#currentAddress').fill(data.currentAddress);
-    await page.locator('#permanentAddress').fill(data.permanentAddress);
-    await page.locator('#submit').click();
+    await textBoxPage.fillForm(data);
+    await textBoxPage.submit();
 
-    const output = page.locator('#output');
-    await expect(output).toBeVisible();
-    await expect(output).toContainText(data.fullName);
-    await expect(output).toContainText(data.email);
-    await expect(output).toContainText(data.currentAddress);
-    await expect(output).toContainText(data.permanentAddress);
+    await expect(textBoxPage.output).toBeVisible();
+    await expect(textBoxPage.output).toContainText(data.fullName);
+    await expect(textBoxPage.output).toContainText(data.email);
+    await expect(textBoxPage.output).toContainText(data.currentAddress);
+    await expect(textBoxPage.output).toContainText(data.permanentAddress);
   });
 });
 
 test.describe('Buttons', () => {
-  test('should handle single click', async ({ page, testData }) => {
-    await page.goto('/practice/buttons');
+  test('should handle single click', async ({ page }) => {
+    const buttonsPage = new ButtonsPage(page);
+    await buttonsPage.goto();
 
-    await page.locator('#dynamicClickBtn').click();
-    await expect(page.getByText('You have done a dynamic click')).toBeVisible();
+    await buttonsPage.clickDynamic();
+    await expect(buttonsPage.dynamicClickMessage).toBeVisible();
   });
 
   test('should handle double click', async ({ page }) => {
-    await page.goto('/practice/buttons');
+    const buttonsPage = new ButtonsPage(page);
+    await buttonsPage.goto();
 
-    await page.locator('#doubleClickBtn').dblclick();
-    await expect(page.getByText('You have done a double click')).toBeVisible();
+    await buttonsPage.doubleClick();
+    await expect(buttonsPage.doubleClickMessage).toBeVisible();
   });
 
   test('should handle right click', async ({ page }) => {
-    await page.goto('/practice/buttons');
+    const buttonsPage = new ButtonsPage(page);
+    await buttonsPage.goto();
 
-    await page.locator('#rightClickBtn').click({ button: 'right' });
-    await expect(page.getByText('You have done a right click')).toBeVisible();
+    await buttonsPage.rightClick();
+    await expect(buttonsPage.rightClickMessage).toBeVisible();
   });
 });
