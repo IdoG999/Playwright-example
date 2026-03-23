@@ -22,7 +22,7 @@ export class ButtonsPage {
   }
 
   async clickDynamic() {
-    await this.page.getByRole('button', { name: 'Click Me' }).click();
+    await this.page.getByRole('button', { name: 'Click Me', exact: true }).click();
   }
 
   async doubleClick() {

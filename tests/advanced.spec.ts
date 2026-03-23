@@ -7,6 +7,14 @@ import { test, expect } from './fixtures';
  */
 test.describe('Advanced Playwright Tests', () => {
   test.describe('API Testing', () => {
+    test.beforeEach(async () => {
+      // Request fixture is isolated per test - no setup needed
+    });
+
+    test.afterEach(async () => {
+      // No cleanup needed for direct API calls
+    });
+
     test('should call API directly and assert response', async ({ request }) => {
       const response = await request.get('https://jsonplaceholder.typicode.com/posts/1');
       expect(response.ok()).toBeTruthy();
@@ -29,6 +37,14 @@ test.describe('Advanced Playwright Tests', () => {
   });
 
   test.describe('Mock API', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.context().clearCookies();
+    });
+
+    test.afterEach(async ({ page }) => {
+      await page.unrouteAll();
+    });
+
     test('should mock API and return custom response without calling real API', async ({
       page,
     }) => {
@@ -59,6 +75,14 @@ test.describe('Advanced Playwright Tests', () => {
   });
 
   test.describe('Mock Browser APIs', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.context().clearCookies();
+    });
+
+    test.afterEach(async ({ page }) => {
+      await page.unrouteAll();
+    });
+
     test('should mock navigator.geolocation', async ({ page }) => {
       await page.addInitScript(() => {
         const mockPosition = {

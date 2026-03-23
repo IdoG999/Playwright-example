@@ -2,11 +2,17 @@ import { test, expect } from './fixtures';
 import { PracticeFormPage, BooksPage, LoginPage } from '../pages';
 
 test.describe('Practice Form', () => {
+  test.beforeEach(async ({ page }) => {
+    await new PracticeFormPage(page).goto();
+  });
+
+  test.afterEach(async ({ page }) => {
+    await page.context().clearCookies();
+  });
+
   test('should submit full student registration form', async ({ page, testData }) => {
     test.setTimeout(60000);
     const practiceFormPage = new PracticeFormPage(page);
-    await practiceFormPage.goto();
-
     const data = testData.practiceForm;
     await practiceFormPage.fillForm(data);
     await practiceFormPage.submit();
@@ -21,6 +27,10 @@ test.describe('Practice Form', () => {
 test.describe('Book Store', () => {
   test.beforeEach(async ({ page }) => {
     await new BooksPage(page).goto();
+  });
+
+  test.afterEach(async ({ page }) => {
+    await page.context().clearCookies();
   });
 
   test('should search books and filter results', async ({ page }) => {
@@ -46,10 +56,16 @@ test.describe('Book Store', () => {
 });
 
 test.describe('Login - Negative and Navigation', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/practice/login');
+  });
+
+  test.afterEach(async ({ page }) => {
+    await page.context().clearCookies();
+  });
+
   test('should show error on invalid credentials', async ({ page, testData }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.goto();
-
     const creds = testData.loginCredentials;
     await loginPage.fillCredentials(creds);
     await loginPage.login();
@@ -59,8 +75,7 @@ test.describe('Login - Negative and Navigation', () => {
 
   test('should navigate to register when clicking New User', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.gotoDemoQa();
-
+    await loginPage.gotoDemoQa(); // Override: this test needs DemoQA, not XQA
     await loginPage.clickNewUser();
 
     await expect(page).toHaveURL(/\/register/);
@@ -69,6 +84,14 @@ test.describe('Login - Negative and Navigation', () => {
 });
 
 test.describe('Multi-step Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.context().clearCookies();
+  });
+
+  test.afterEach(async ({ page }) => {
+    await page.context().clearCookies();
+  });
+
   test('should complete practice form and verify modal, then navigate to books', async ({
     page,
     testData,
