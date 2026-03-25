@@ -184,6 +184,42 @@ Newer versions of the HTML Publisher plugin require `keepAll`, `alwaysLinkToLast
 
 ---
 
+## Push Jenkins build results to GitHub
+
+By default the Jenkinsfile pushes **`jenkins/build-artifacts/`** to branch **`ci/playwright-report`** after **every** build (success or failure), so the latest Playwright HTML report and CI summaries are always on GitHub.
+
+What gets pushed:
+
+- `playwright-report/` — HTML report (when tests produced it)
+- `junit.xml` and `results.json` — CI-only machine-readable summaries (from `playwright.config.ts` when `CI=true`)
+- `BUILD_INFO.txt` — build number, Jenkins URL, **Result** (SUCCESS / FAILURE / etc.), UTC time
+
+### 1. Create a Jenkins credential (do not put passwords in the repo)
+
+1. **Manage Jenkins** → **Credentials** → add **Username with password**.
+2. **Username**: your GitHub username (e.g. `ido`).
+3. **Password**: a **GitHub Personal Access Token (classic)** with `repo` scope — not your GitHub account password.  
+   Create one: GitHub → **Settings** → **Developer settings** → **Personal access tokens**.
+4. **ID**: must be exactly **`github-playwright-push`** (matches the Jenkinsfile).
+
+Your **Jenkins login password** is separate; it is not stored in Git and is not used for `git push`.
+
+### 2. Parameter `PUSH_REPORT_TO_GIT`
+
+Default is **on**. Use **Build with Parameters** to turn it off for a run if you do not want to push.
+
+The pipeline uses **`git push --force`** to that branch so each run replaces the previous snapshot. Review on GitHub under branch **`ci/playwright-report`** (open `jenkins/build-artifacts/playwright-report/index.html` in the tree or raw view as needed).
+
+---
+
+## Build artifacts folder (`jenkins/build-artifacts/`)
+
+After each run, the pipeline copies the Playwright HTML report into `jenkins/build-artifacts/playwright-report/` and writes `BUILD_INFO.txt` (build number, URL, time). Jenkins also **archives** that folder so you can download it from the build page under **Artifacts**.
+
+The HTML output is **gitignored** by default so the repo does not grow. To commit a snapshot to GitHub, see [build-artifacts/README.md](build-artifacts/README.md).
+
+---
+
 ## Summary Checklist
 
 **Connect GitHub:**

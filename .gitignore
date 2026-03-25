@@ -1,6 +1,10 @@
 
 # Jenkins
 jenkins/.env
+# Copied Playwright outputs from CI (Jenkins pushes with git add -f to ci/playwright-report)
+jenkins/build-artifacts/playwright-report/
+jenkins/build-artifacts/junit.xml
+jenkins/build-artifacts/results.json
 
 # Playwright
 node_modules/
