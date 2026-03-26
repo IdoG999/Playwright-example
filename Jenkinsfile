@@ -3,8 +3,8 @@ pipeline {
     parameters {
         booleanParam(
             name: 'PUSH_REPORT_TO_GIT',
-            defaultValue: true,
-            description: 'Push Playwright report + CI summaries to GitHub branch ci/playwright-report (credential id: github-playwright-push)'
+            defaultValue: false,
+            description: 'Push Playwright report to GitHub branch ci/playwright-report. Requires Jenkins credential id github-playwright-push (GitHub username + PAT). Leave off until that credential exists, then enable.'
         )
     }
     stages {
@@ -90,8 +90,20 @@ pipeline {
                             """
                         }
                     } catch (err) {
-                        def msg = err instanceof Throwable ? err.message : err.toString()
-                        if (msg?.contains('Could not find credentials')) {
+                        def missingCred = false
+                        def t = err
+                        while (t != null) {
+                            def cls = t.getClass().name
+                            def msg = t instanceof Throwable ? (t.message ?: '') : t.toString()
+                            if (cls.contains('CredentialNotFoundException') ||
+                                msg.contains('Could not find credentials') ||
+                                msg.contains('credentials entry with ID')) {
+                                missingCred = true
+                                break
+                            }
+                            t = t instanceof Throwable ? t.cause : null
+                        }
+                        if (missingCred) {
                             echo 'WARNING: Git push skipped — Jenkins has no credential with ID github-playwright-push.'
                             echo 'Add: Manage Jenkins → Credentials → Username with password (GitHub user + PAT, ID exactly github-playwright-push). See jenkins/GITHUB_AND_PIPELINE_SETUP.md'
                         } else {

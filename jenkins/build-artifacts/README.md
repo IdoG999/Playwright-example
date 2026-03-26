@@ -27,4 +27,4 @@ To **publish a report snapshot** to GitHub:
    git push
    ```
 
-**GitHub:** With credential **`github-playwright-push`** and **`PUSH_REPORT_TO_GIT`** (default on), Jenkins pushes this folder to branch **`ci/playwright-report`** after every build. Prefer Jenkins **Artifacts** / **Playwright Report** for interactive review; use the GitHub branch for a shared, durable link to the latest run.
+**GitHub:** With credential **`github-playwright-push`** and **`PUSH_REPORT_TO_GIT`** enabled in **Build with Parameters** (default off until the credential exists), Jenkins pushes this folder to branch **`ci/playwright-report`** after each run where push is on. Prefer Jenkins **Artifacts** / **Playwright Report** for interactive review; use the GitHub branch for a shared, durable link to the latest run.
