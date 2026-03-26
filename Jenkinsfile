@@ -66,27 +66,37 @@ pipeline {
             archiveArtifacts artifacts: 'jenkins/build-artifacts/**', allowEmptyArchive: true, fingerprint: true
             script {
                 if (params.PUSH_REPORT_TO_GIT) {
-                    withCredentials([
-                        usernamePassword(
-                            credentialsId: 'github-playwright-push',
-                            usernameVariable: 'GH_USER',
-                            passwordVariable: 'GH_TOKEN'
-                        )
-                    ]) {
-                        sh """
-                            set +x
-                            git config user.email "jenkins@localhost"
-                            git config user.name "Jenkins CI"
-                            git add -f jenkins/build-artifacts/playwright-report || true
-                            git add -f jenkins/build-artifacts/junit.xml jenkins/build-artifacts/results.json || true
-                            git add jenkins/build-artifacts/BUILD_INFO.txt jenkins/build-artifacts/README.md || true
-                            if git diff --staged --quiet; then
-                              echo "No artifact changes to push"
-                              exit 0
-                            fi
-                            git commit -m "ci: Jenkins build #${env.BUILD_NUMBER} (${currentBuild.result})"
-                            git push --force "https://\${GH_USER}:\${GH_TOKEN}@github.com/IdoG999/Playwright-example.git" HEAD:refs/heads/ci/playwright-report
-                        """
+                    try {
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: 'github-playwright-push',
+                                usernameVariable: 'GH_USER',
+                                passwordVariable: 'GH_TOKEN'
+                            )
+                        ]) {
+                            sh """
+                                set +x
+                                git config user.email "jenkins@localhost"
+                                git config user.name "Jenkins CI"
+                                git add -f jenkins/build-artifacts/playwright-report || true
+                                git add -f jenkins/build-artifacts/junit.xml jenkins/build-artifacts/results.json || true
+                                git add jenkins/build-artifacts/BUILD_INFO.txt jenkins/build-artifacts/README.md || true
+                                if git diff --staged --quiet; then
+                                  echo "No artifact changes to push"
+                                  exit 0
+                                fi
+                                git commit -m "ci: Jenkins build #${env.BUILD_NUMBER} (${currentBuild.result})"
+                                git push --force "https://\${GH_USER}:\${GH_TOKEN}@github.com/IdoG999/Playwright-example.git" HEAD:refs/heads/ci/playwright-report
+                            """
+                        }
+                    } catch (err) {
+                        def msg = err instanceof Throwable ? err.message : err.toString()
+                        if (msg?.contains('Could not find credentials')) {
+                            echo 'WARNING: Git push skipped — Jenkins has no credential with ID github-playwright-push.'
+                            echo 'Add: Manage Jenkins → Credentials → Username with password (GitHub user + PAT, ID exactly github-playwright-push). See jenkins/GITHUB_AND_PIPELINE_SETUP.md'
+                        } else {
+                            throw err
+                        }
                     }
                 }
             }

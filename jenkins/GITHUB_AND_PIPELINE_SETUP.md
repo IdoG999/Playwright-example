@@ -206,7 +206,9 @@ Your **Jenkins login password** is separate; it is not stored in Git and is not 
 
 ### 2. Parameter `PUSH_REPORT_TO_GIT`
 
-Default is **on**. Use **Build with Parameters** to turn it off for a run if you do not want to push.
+Default is **on**. If the credential **`github-playwright-push`** is missing, the build still **succeeds**; the console shows a **WARNING** and the push step is skipped until you add the credential.
+
+Use **Build with Parameters** to turn push off for a run if you prefer.
 
 The pipeline uses **`git push --force`** to that branch so each run replaces the previous snapshot. Review on GitHub under branch **`ci/playwright-report`** (open `jenkins/build-artifacts/playwright-report/index.html` in the tree or raw view as needed).
 
